@@ -1863,6 +1863,153 @@ select {
   max-width: 42rem;
 }
 
+.timePanel {
+  display: grid;
+  align-content: start;
+  gap: 0.75rem;
+}
+
+.timePanel h2 {
+  margin-bottom: 0;
+  color: var(--navy);
+}
+
+.timeChips,
+.timeWarnings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.timeChips span,
+.timeWarnings span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.75rem;
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.timeChips span {
+  background: rgba(47, 98, 112, 0.12);
+  color: var(--blue);
+}
+
+.timeWarnings span {
+  background: rgba(169, 78, 85, 0.12);
+  color: var(--danger);
+}
+
+.povDrawer {
+  padding: 0.85rem 1rem;
+}
+
+.povDrawer summary {
+  cursor: pointer;
+  color: var(--navy);
+  font-weight: 950;
+}
+
+.povGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-top: 0.85rem;
+}
+
+.povCard {
+  display: grid;
+  justify-items: center;
+  gap: 0.28rem;
+  min-height: 9.5rem;
+  border: 1px solid rgba(49, 95, 104, 0.18);
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 0.65rem;
+  color: var(--ink);
+  text-align: center;
+}
+
+.povCard.active {
+  border-color: rgba(214, 154, 66, 0.65);
+  background: #fffdfa;
+  box-shadow: 0 12px 28px rgba(31, 43, 46, 0.1);
+}
+
+.povCard:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.povCard span {
+  color: var(--blue);
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: capitalize;
+}
+
+.povCard small {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--muted);
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.scenePicker {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 0.75rem;
+}
+
+.scenePicker.empty {
+  border: 1px dashed rgba(49, 95, 104, 0.28);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+}
+
+.scenePicker.empty span {
+  color: var(--muted);
+}
+
+.storyletCard {
+  display: grid;
+  gap: 0.35rem;
+  width: 100%;
+  border: 1px solid rgba(49, 95, 104, 0.18);
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.76);
+  padding: 0.75rem;
+  color: var(--ink);
+  text-align: left;
+  box-shadow: 0 8px 18px rgba(31, 43, 46, 0.06);
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.storyletCard:hover {
+  border-color: rgba(47, 98, 112, 0.45);
+  box-shadow: 0 16px 26px rgba(31, 43, 46, 0.12);
+  transform: translateY(-2px);
+}
+
+.storyletCard > span:not(.toneBadge) {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--muted);
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.storyletCard small {
+  color: var(--clay);
+  font-weight: 850;
+}
+
 .mapHeroRow {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
@@ -2296,6 +2443,7 @@ select {
   .hudStats,
   .castFilters,
   .castGrid,
+  .povGrid,
   .mapTeaserRail,
   .episodeMetaDock,
   .journalGrid {
@@ -2321,6 +2469,7 @@ select {
   .castFilters,
   .castGrid,
   .castCard,
+  .povGrid,
   .mapTeaserRail,
   .episodeMetaDock,
   .journalGrid,

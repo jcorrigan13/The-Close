@@ -3,6 +3,17 @@ import { endings } from "../data/endings";
 import { gossipMessages } from "../data/gossip";
 import { episodes } from "../data/longEpisodes";
 import { startingStats } from "../data/options";
+import { advanceWeek as advanceWeekInternal } from "./advanceWeek";
+import {
+  createCharacterSim,
+  createCoParenting,
+  createIslandTime,
+  createPregnancies,
+  createRandomIslandSetup,
+  unlockInitialPOVs,
+} from "./newGame";
+import { hashSeed } from "./random";
+import { getStoryletById } from "./storyletSelector";
 import type {
   ChoiceResult,
   Ending,
@@ -13,6 +24,7 @@ import type {
   Relationship,
   RelationshipLabel,
   SceneChoice,
+  StoryletChoice,
   Stats,
 } from "../types";
 import { SAVE_VERSION } from "../types";
@@ -21,14 +33,28 @@ const clamp = (value: number) => Math.max(0, Math.min(100, value));
 
 export function createNewGame(player: Player): GameState {
   const now = new Date().toISOString();
-  return {
+  const seed = hashSeed(`${player.firstName}:${player.surname}:${player.background}:${player.trait}:${now}`);
+  const setup = createRandomIslandSetup(seed);
+  const baseState: GameState = {
     saveVersion: SAVE_VERSION,
     player,
+    seed,
+    time: createIslandTime(),
+    currentPOVCharacterId: "newcomer",
     stats: tuneStartingStats(player),
     currentEpisodeNumber: 1,
     currentSceneId: "e1-s1",
     relationships: createInitialRelationships(),
+    characterSim: createCharacterSim(player, seed),
+    pregnancies: createPregnancies(setup),
+    coParenting: createCoParenting(),
+    teenDrama: createTeenDramaFromSetup(setup),
     flags: [`ambition_${slug(player.ambition)}`, `background_${player.background}`, `trait_${player.trait}`],
+    worldFlags: setup.worldFlags,
+    publicKnowledge: [],
+    characterKnowledge: {
+      newcomer: ["arrival_uncertain"],
+    },
     discoveredSecrets: [],
     parenthood: { route: "none", children: [] },
     recaps: [],
@@ -40,6 +66,7 @@ export function createNewGame(player: Player): GameState {
     createdAt: now,
     updatedAt: now,
   };
+  return unlockInitialPOVs(baseState);
 }
 
 export function getCurrentEpisode(state: GameState): Episode | undefined {
@@ -161,6 +188,129 @@ export function applySceneChoice(state: GameState, episodeId: string, sceneId: s
 }
 
 export const applyChoice = applySceneChoice;
+
+export function startStorylet(state: GameState, storyletId: string, locationId?: string): GameState {
+  return {
+    ...state,
+    activeStoryletId: storyletId,
+    selectedLocationId: locationId,
+    lastChoiceResult: undefined,
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+export function setPOVCharacter(state: GameState, characterId: string): GameState {
+  const sim = state.characterSim[characterId];
+  if (!sim || sim.playableStatus === "hidden" || sim.playableStatus === "child" || sim.playableStatus === "unavailable") return state;
+  return {
+    ...state,
+    currentPOVCharacterId: characterId,
+    selectedLocationId: sim.currentLocationId,
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+export function advanceWeek(state: GameState): GameState {
+  return advanceWeekInternal(state);
+}
+
+export function applyStoryletChoice(state: GameState, storyletId: string, choice: StoryletChoice): GameState {
+  const storylet = getStoryletById(storyletId);
+  if (!storylet) return state;
+
+  const flags = new Set(state.flags);
+  const worldFlags = new Set(state.worldFlags);
+  choice.worldFlagsRemoved?.forEach((flag) => worldFlags.delete(flag));
+  choice.worldFlagsAdded?.forEach((flag) => worldFlags.add(flag));
+
+  const stats = { ...state.stats };
+  Object.entries(choice.statChanges).forEach(([key, delta]) => {
+    stats[key as keyof Stats] = clamp(stats[key as keyof Stats] + (delta ?? 0));
+  });
+
+  const relationships = { ...state.relationships };
+  Object.entries(choice.relationshipChanges).forEach(([characterId, delta]) => {
+    const existing = relationships[characterId] ?? createRelationship(characterId);
+    const score = clamp(existing.score + delta);
+    const states = mergeStates(existing.states, choice.relationshipStateChanges?.[characterId] ?? []);
+    relationships[characterId] = {
+      ...existing,
+      score,
+      states,
+      label: relationshipLabel(score, states, flags, characterId),
+      lastChanged: choice.recapLine,
+    };
+  });
+  Object.entries(choice.relationshipStateChanges ?? {}).forEach(([characterId, statesToAdd]) => {
+    const existing = relationships[characterId] ?? createRelationship(characterId);
+    const states = mergeStates(existing.states, statesToAdd);
+    relationships[characterId] = {
+      ...existing,
+      states,
+      label: relationshipLabel(existing.score, states, flags, characterId),
+      lastChanged: choice.recapLine,
+    };
+  });
+
+  const activeHookIds = new Set(state.activeHookIds);
+  choice.hooksUnlocked?.forEach((hookId) => activeHookIds.add(hookId));
+
+  const futureLocks = new Set(state.futureLocks);
+  choice.futureLocks?.forEach((lock) => futureLocks.add(lock));
+
+  const publicKnowledge = new Set(state.publicKnowledge);
+  choice.publicKnowledgeAdded?.forEach((knowledge) => publicKnowledge.add(knowledge));
+
+  const characterKnowledge = { ...state.characterKnowledge };
+  Object.entries(choice.characterKnowledgeAdded ?? {}).forEach(([characterId, knowledge]) => {
+    characterKnowledge[characterId] = [...new Set([...(characterKnowledge[characterId] ?? []), ...knowledge])];
+  });
+
+  const pregnancies = applyPregnancyUpdates(state, choice);
+  const coParenting = applyCoParentingUpdates(state, choice);
+  const teenDrama = choice.teenDramaUpdates ? { ...state.teenDrama, ...choice.teenDramaUpdates } : state.teenDrama;
+  const gossipFeed = mergeGossip(state.gossipFeed, choice.gossipUnlocked ?? []);
+  const result: ChoiceResult = {
+    choiceLabel: choice.label,
+    immediateResponseText: choice.responseText,
+    statChanges: choice.statChanges,
+    relationshipChanges: choice.relationshipChanges,
+    relationshipStateChanges: choice.relationshipStateChanges ?? {},
+    gossipUnlocked: choice.gossipUnlocked ?? [],
+    hooksUnlocked: choice.hooksUnlocked ?? [],
+    futureLocks: choice.futureLocks ?? [],
+    recapLine: choice.recapLine,
+  };
+
+  return {
+    ...state,
+    stats,
+    relationships,
+    pregnancies,
+    coParenting,
+    teenDrama,
+    worldFlags: [...worldFlags],
+    publicKnowledge: [...publicKnowledge],
+    characterKnowledge,
+    activeHookIds: [...activeHookIds],
+    gossipFeed,
+    futureLocks: [...futureLocks],
+    recaps: [
+      ...state.recaps,
+      {
+        episodeNumber: state.time.week,
+        title: storylet.title,
+        sceneTitle: storylet.tone,
+        choiceLabel: choice.label,
+        recapLine: choice.recapLine,
+        resultText: choice.responseText,
+      },
+    ],
+    activeStoryletId: undefined,
+    lastChoiceResult: result,
+    updatedAt: new Date().toISOString(),
+  };
+}
 
 export function clearChoiceResult(state: GameState): GameState {
   return { ...state, lastChoiceResult: undefined };
@@ -320,6 +470,64 @@ function mergeGossip(existing: GameState["gossipFeed"], unlockedIds: string[]) {
     if (message) map.set(message.id, message);
   });
   return [...map.values()];
+}
+
+function applyPregnancyUpdates(state: GameState, choice: StoryletChoice) {
+  if (!choice.pregnancyUpdates?.length) return state.pregnancies;
+  return state.pregnancies.map((pregnancy, index) => {
+    const update = choice.pregnancyUpdates?.[index];
+    if (!update) return pregnancy;
+    return {
+      ...pregnancy,
+      ...update,
+      supportNetwork: update.supportNetwork ? [...new Set([...pregnancy.supportNetwork, ...update.supportNetwork])] : pregnancy.supportNetwork,
+      futureChoiceFlags: update.futureChoiceFlags
+        ? [...new Set([...pregnancy.futureChoiceFlags, ...update.futureChoiceFlags])]
+        : pregnancy.futureChoiceFlags,
+    };
+  });
+}
+
+function applyCoParentingUpdates(state: GameState, choice: StoryletChoice) {
+  if (!choice.coParentingUpdates?.length) return state.coParenting;
+  return state.coParenting.map((route, index) => {
+    const update = choice.coParentingUpdates?.[index];
+    if (!update) return route;
+    return {
+      ...route,
+      ...Object.fromEntries(
+        Object.entries(update).map(([key, value]) => {
+          const existing = route[key as keyof typeof route];
+          if (typeof existing === "number" && typeof value === "number") {
+            return [key, clamp(existing + value)];
+          }
+          return [key, value];
+        }),
+      ),
+    };
+  });
+}
+
+function createTeenDramaFromSetup(setup: ReturnType<typeof createRandomIslandSetup>) {
+  return {
+    active: true,
+    centralTeenId: setup.teenCentral,
+    rumourStarterId: setup.rumourStarter,
+    screenshotSubjectId: "isla-fraser",
+    weeksIgnored: 0,
+    groupChatStatus: "rumbling" as const,
+    teenTrust: {
+      "nina-patel": 40,
+      "brodie-macrae": 40,
+      "sorcha-buchanan": 45,
+      "cam-murray": 30,
+    },
+    parentTrust: {
+      "asha-patel": 45,
+      "eilidh-macrae": 42,
+      "greer-murray": 25,
+    },
+  };
 }
 
 function slug(value: string) {

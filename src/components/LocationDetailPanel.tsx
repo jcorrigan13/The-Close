@@ -5,15 +5,17 @@ import type { GameState, Location } from "../types";
 import { LocationBackdrop } from "./LocationBackdrop";
 import { Portrait } from "./Portrait";
 import { locationStatus } from "./MapLocationMarker";
+import { ScenePicker } from "./ScenePicker";
 
 interface LocationDetailPanelProps {
   location: Location;
   state: GameState;
   onStartEpisode: () => void;
+  onStartStorylet: (storyletId: string, locationId: string) => void;
   onOpenProfile: (characterId: string) => void;
 }
 
-export function LocationDetailPanel({ location, state, onStartEpisode, onOpenProfile }: LocationDetailPanelProps) {
+export function LocationDetailPanel({ location, state, onStartEpisode, onStartStorylet, onOpenProfile }: LocationDetailPanelProps) {
   const family = families.find((item) => item.id === location.associatedFamilyId);
   const people = characters.filter((character) => (character.lastSeenLocationId ?? character.locationId) === location.id);
   const scene = getCurrentScene(state);
@@ -52,7 +54,7 @@ export function LocationDetailPanel({ location, state, onStartEpisode, onOpenPro
         )}
         <div className="locationActions">
           <button className="primaryButton" type="button" onClick={onStartEpisode} disabled={!sceneHere}>
-            {sceneHere ? "Go here" : "No scene here yet"}
+            {sceneHere ? "Continue fixed scene" : "Fixed scene elsewhere"}
           </button>
           {people[0] && (
             <button className="secondaryButton" type="button" onClick={() => onOpenProfile(people[0].id)}>
@@ -63,6 +65,10 @@ export function LocationDetailPanel({ location, state, onStartEpisode, onOpenPro
             Read gossip
           </button>
         </div>
+        <details className="softDetails">
+          <summary>Available scenes</summary>
+          <ScenePicker state={state} locationId={location.id} onStartStorylet={onStartStorylet} />
+        </details>
         <details className="softDetails">
           <summary>More details</summary>
           <div className="locationNotes">

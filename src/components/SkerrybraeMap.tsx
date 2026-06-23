@@ -6,14 +6,19 @@ import { CurrentObjective } from "./CurrentObjective";
 import { GameHUD } from "./GameHUD";
 import { LocationDetailPanel } from "./LocationDetailPanel";
 import { MapLocationMarker } from "./MapLocationMarker";
+import { POVSelector } from "./POVSelector";
+import { TimePanel } from "./TimePanel";
 
 interface SkerrybraeMapProps {
   state: GameState;
   onStartEpisode: () => void;
+  onStartStorylet: (storyletId: string, locationId: string) => void;
+  onSelectPOV: (characterId: string) => void;
+  onAdvanceWeek: () => void;
   onOpenProfile: (characterId: string) => void;
 }
 
-export function SkerrybraeMap({ state, onStartEpisode, onOpenProfile }: SkerrybraeMapProps) {
+export function SkerrybraeMap({ state, onStartEpisode, onStartStorylet, onSelectPOV, onAdvanceWeek, onOpenProfile }: SkerrybraeMapProps) {
   const episode = getCurrentEpisode(state);
   const scene = getCurrentScene(state);
   const [selectedId, setSelectedId] = useState(scene?.locationId ?? "harbour");
@@ -38,8 +43,9 @@ export function SkerrybraeMap({ state, onStartEpisode, onOpenProfile }: Skerrybr
 
       <div className="mapHeroRow">
         <GameHUD state={state} />
-        <CurrentObjective state={state} />
+        <TimePanel state={state} onAdvanceWeek={onAdvanceWeek} />
       </div>
+      <POVSelector state={state} onSelectPOV={onSelectPOV} />
 
       <div className="mapFocusGrid">
         <div className="mapColumn">
@@ -58,7 +64,13 @@ export function SkerrybraeMap({ state, onStartEpisode, onOpenProfile }: Skerrybr
         </div>
 
         <aside className="mapMiniPanel">
-          <LocationDetailPanel location={selected} state={state} onStartEpisode={onStartEpisode} onOpenProfile={onOpenProfile} />
+          <LocationDetailPanel
+            location={selected}
+            state={state}
+            onStartEpisode={onStartEpisode}
+            onStartStorylet={onStartStorylet}
+            onOpenProfile={onOpenProfile}
+          />
         </aside>
       </div>
 

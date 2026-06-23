@@ -1,8 +1,8 @@
 import type { GameState } from "../types";
 import { SAVE_VERSION } from "../types";
 
-const SAVE_KEY = "the-close-save-v2";
-const LEGACY_SAVE_KEY = "the-close-save-v1";
+const SAVE_KEY = "the-close-save-v3";
+const LEGACY_SAVE_KEY = "the-close-save-v2";
 
 export function saveGame(state: GameState) {
   localStorage.setItem(SAVE_KEY, JSON.stringify({ ...state, saveVersion: SAVE_VERSION, updatedAt: new Date().toISOString() }));
@@ -36,4 +36,5 @@ export function hasLegacySave() {
 export function clearSave() {
   localStorage.removeItem(SAVE_KEY);
   localStorage.removeItem(LEGACY_SAVE_KEY);
+  localStorage.removeItem("the-close-save-v1");
 }

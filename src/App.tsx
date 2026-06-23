@@ -12,11 +12,19 @@ import { RelationshipScreen } from "./components/RelationshipScreen";
 import { SettingsScreen } from "./components/SettingsScreen";
 import { SkerrybraeMap } from "./components/SkerrybraeMap";
 import { StartScreen } from "./components/StartScreen";
+import { StoryletPlayer } from "./components/StoryletPlayer";
 import { ToastNotification } from "./components/ToastNotification";
 import { characters } from "./data/characters";
-import { applySceneChoice, createNewGame } from "./engine/gameEngine";
+import {
+  advanceWeek,
+  applySceneChoice,
+  applyStoryletChoice,
+  createNewGame,
+  setPOVCharacter,
+  startStorylet,
+} from "./engine/gameEngine";
 import { clearSave, hasLegacySave, hasSave, loadGame, saveGame } from "./storage/saveGame";
-import type { GameState, Player, SceneChoice, Screen } from "./types";
+import type { GameState, Player, SceneChoice, Screen, StoryletChoice } from "./types";
 
 function App() {
   const [screen, setScreen] = useState<Screen>("start");
@@ -64,6 +72,41 @@ function App() {
     setScreen(nextState.endingId ? "finale" : "episode");
   };
 
+  const startDynamicStorylet = (storyletId: string, locationId: string) => {
+    if (!gameState) return;
+    const nextState = startStorylet(gameState, storyletId, locationId);
+    setGameState(nextState);
+    saveGame(nextState);
+    setSaveAvailable(true);
+    setScreen("episode");
+  };
+
+  const chooseStoryletOption = (storyletId: string, choice: StoryletChoice) => {
+    if (!gameState) return;
+    const nextState = applyStoryletChoice(gameState, storyletId, choice);
+    setGameState(nextState);
+    saveGame(nextState);
+    setSaveAvailable(true);
+    setScreen("map");
+  };
+
+  const selectPOV = (characterId: string) => {
+    if (!gameState) return;
+    const nextState = setPOVCharacter(gameState, characterId);
+    setGameState(nextState);
+    saveGame(nextState);
+    setSaveAvailable(true);
+  };
+
+  const advanceIslandWeek = () => {
+    if (!gameState) return;
+    const nextState = advanceWeek(gameState);
+    setGameState(nextState);
+    saveGame(nextState);
+    setSaveAvailable(true);
+    setScreen("map");
+  };
+
   const resetSave = () => {
     const shouldReset = window.confirm("Reset your saved game and return to the title screen?");
     if (!shouldReset) return;
@@ -92,8 +135,22 @@ function App() {
     <div className="appShell">
       <Navigation activeScreen={screen} onNavigate={setScreen} hasEnding={Boolean(gameState.endingId)} />
       <main className="mainPanel">
-        {screen === "map" && <SkerrybraeMap state={gameState} onStartEpisode={() => setScreen("episode")} onOpenProfile={openProfile} />}
-        {screen === "episode" && <EpisodeScreen state={gameState} onChoose={chooseEpisodeOption} />}
+        {screen === "map" && (
+          <SkerrybraeMap
+            state={gameState}
+            onStartEpisode={() => setScreen("episode")}
+            onStartStorylet={startDynamicStorylet}
+            onSelectPOV={selectPOV}
+            onAdvanceWeek={advanceIslandWeek}
+            onOpenProfile={openProfile}
+          />
+        )}
+        {screen === "episode" &&
+          (gameState.activeStoryletId ? (
+            <StoryletPlayer state={gameState} onChoose={chooseStoryletOption} onBackToMap={() => setScreen("map")} />
+          ) : (
+            <EpisodeScreen state={gameState} onChoose={chooseEpisodeOption} />
+          ))}
         {screen === "directory" && <CharacterDirectory state={gameState} onOpenProfile={openProfile} />}
         {screen === "profile" && (
           <CharacterProfile character={selectedCharacter} state={gameState} onBack={() => setScreen("directory")} />

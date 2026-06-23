@@ -1,4 +1,4 @@
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 
 export type AgeBracket = "18-24" | "25-34" | "35-49" | "50+";
 
@@ -122,6 +122,7 @@ export interface Character {
   publicReputation?: string;
   connections?: string[];
   lastSeenLocationId?: string;
+  currentStorylineTags?: string[];
   playerRelationship?: string;
   quote?: string;
   isTeen?: boolean;
@@ -323,10 +324,22 @@ export interface GameState {
   saveVersion: number;
   player: Player;
   stats: Stats;
+  seed: number;
+  time: IslandTime;
+  currentPOVCharacterId: string;
+  activeStoryletId?: string;
+  selectedLocationId?: string;
   currentEpisodeNumber: number;
   currentSceneId: string;
   relationships: Record<string, Relationship>;
+  characterSim: Record<string, CharacterSimState>;
+  pregnancies: PregnancyState[];
+  coParenting: CoParentingState[];
+  teenDrama: TeenDramaState;
   flags: string[];
+  worldFlags: string[];
+  publicKnowledge: string[];
+  characterKnowledge: Record<string, string[]>;
   discoveredSecrets: string[];
   parenthood: ChildRoute;
   recaps: RecapEntry[];
@@ -339,6 +352,129 @@ export interface GameState {
   endingId?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export type Season = "Spring" | "Summer" | "Autumn" | "Winter";
+
+export interface IslandTime {
+  year: number;
+  season: Season;
+  week: number;
+  daysElapsed: number;
+  schoolTerm: "term" | "holiday";
+  weatherMood: string;
+  publicEvent: string;
+}
+
+export type LifeStage = "child" | "teen" | "youngAdult" | "adult" | "olderAdult";
+export type PlayableStatus = "playable" | "unlockable" | "supporting" | "hidden" | "child" | "teen" | "unavailable";
+
+export interface CharacterSimState {
+  characterId: string;
+  lifeStage: LifeStage;
+  currentLocationId: string;
+  homeLocationId: string;
+  playableStatus: PlayableStatus;
+  unlockReason: string;
+  availability: "available" | "busy" | "locked" | "away";
+  stress: number;
+  reputation: number;
+  secretsKnown: string[];
+  secretsHidden: string[];
+  goals: string[];
+  worries: string[];
+  romanceStatus: string;
+  familyStatus: string;
+  parenthoodStatus: string;
+  currentStorylineTags: string[];
+  personalTimeline: string[];
+}
+
+export interface PregnancyState {
+  characterId: string;
+  pregnancyStatus: "none" | "suspected" | "confirmed" | "private" | "public" | "complicated" | "resolved";
+  weeksPregnant: number;
+  dueWeek: number;
+  knownByCharacters: string[];
+  knownPublicly: boolean;
+  coParentCharacterId?: string;
+  supportNetwork: string[];
+  stressLevel: number;
+  medicalSupport: boolean;
+  familyReaction: string;
+  futureChoiceFlags: string[];
+  outcomeStatus: "ongoing" | "birth" | "adoption" | "privateDecision" | "resolved";
+}
+
+export interface CoParentingState {
+  childId: string;
+  parentAId: string;
+  parentBId: string;
+  livingArrangement: string;
+  trustBetweenParents: number;
+  conflictLevel: number;
+  supportLevel: number;
+  newPartnerTension: number;
+  grandparentInterference: number;
+  childBondWithEachParent: Record<string, number>;
+  publicGossipLevel: number;
+}
+
+export interface TeenDramaState {
+  active: boolean;
+  centralTeenId: string;
+  rumourStarterId: string;
+  screenshotSubjectId: string;
+  weeksIgnored: number;
+  groupChatStatus: "quiet" | "rumbling" | "spreading" | "public" | "resolved";
+  teenTrust: Record<string, number>;
+  parentTrust: Record<string, number>;
+}
+
+export interface StoryletChoice {
+  id: string;
+  label: string;
+  toneBadge: ChoiceTone;
+  hint: string;
+  risk: "Low" | "Medium" | "High";
+  responseText: string;
+  statChanges: StatChanges;
+  relationshipChanges: Record<string, number>;
+  relationshipStateChanges?: Record<string, RelationshipLabel[]>;
+  worldFlagsAdded?: string[];
+  worldFlagsRemoved?: string[];
+  characterKnowledgeAdded?: Record<string, string[]>;
+  publicKnowledgeAdded?: string[];
+  gossipUnlocked?: string[];
+  hooksUnlocked?: string[];
+  futureLocks?: string[];
+  pregnancyUpdates?: Partial<PregnancyState>[];
+  coParentingUpdates?: Partial<CoParentingState>[];
+  teenDramaUpdates?: Partial<TeenDramaState>;
+  recapLine: string;
+}
+
+export interface Storylet {
+  id: string;
+  title: string;
+  locationId: string;
+  eligiblePOVCharacters: string[] | "any";
+  requiredWorldFlags: string[];
+  blockedWorldFlags: string[];
+  timeWindow?: { startWeek?: number; endWeek?: number };
+  lifeStageTags: LifeStage[];
+  storyTags: string[];
+  priority: number;
+  rarity: number;
+  cooldownWeeks: number;
+  setupText: string;
+  dialogueLines: DialogueLine[];
+  choices: StoryletChoice[];
+  followUpHooks: string[];
+  possibleNextStorylets: string[];
+  tone: string;
+  timeSensitive?: boolean;
+  expiresAfterWeeks?: number;
 }
 
 export type Screen =
