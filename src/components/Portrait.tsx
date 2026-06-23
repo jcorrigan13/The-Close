@@ -1,31 +1,42 @@
+import type { CSSProperties } from "react";
 import type { PortraitConfig } from "../types";
+import { familyAccent } from "./uiHelpers";
 
 interface PortraitProps {
   config: PortraitConfig;
   name: string;
   size?: "small" | "medium" | "large";
+  familyId?: string;
+  mood?: string;
 }
 
-export function Portrait({ config, name, size = "medium" }: PortraitProps) {
+export function Portrait({ config, name, size = "medium", familyId, mood }: PortraitProps) {
   const faceRadiusX = config.faceShape === "square" ? 25 : config.faceShape === "heart" ? 22 : 24;
   const faceRadiusY = config.faceShape === "round" ? 25 : 29;
-  const mouthPath =
-    config.expression === "worried"
-      ? "M42 70 Q50 66 58 70"
-      : config.expression === "serious"
-        ? "M42 69 L58 69"
-        : "M40 67 Q50 75 60 67";
+  const mouthPath = mouthFor(config.expression);
+  const accent = familyAccent(familyId);
 
   return (
-    <div className={`portrait portrait-${size}`} role="img" aria-label={`${name} portrait`}>
+    <div
+      className={`portrait portrait-${size}`}
+      role="img"
+      aria-label={`${name} portrait${mood ? `, mood ${mood}` : ""}`}
+      style={{ "--family-accent": accent } as CSSProperties}
+    >
       <svg viewBox="0 0 100 110" aria-hidden="true">
+        <circle cx="50" cy="52" r="45" fill="none" stroke={accent} strokeWidth="4" opacity="0.42" />
         <rect x="16" y="78" width="68" height="28" rx="16" fill={config.outfitColor} />
         <ellipse cx="50" cy="48" rx={faceRadiusX} ry={faceRadiusY} fill={config.skinTone} />
         {config.hairStyle !== "bald" && <Hair styleName={config.hairStyle} color={config.hairColor} />}
-        <circle cx="41" cy="55" r="2.4" fill="#2a2a2a" />
-        <circle cx="59" cy="55" r="2.4" fill="#2a2a2a" />
+        <Eyes expression={config.expression} />
         <path d={mouthPath} fill="none" stroke="#6e4037" strokeWidth="2.5" strokeLinecap="round" />
         {config.expression === "wry" && <path d="M56 68 Q61 70 63 66" fill="none" stroke="#6e4037" strokeWidth="2" />}
+        {config.expression === "embarrassed" && (
+          <g fill="#d98282" opacity="0.45">
+            <circle cx="32" cy="61" r="4" />
+            <circle cx="68" cy="61" r="4" />
+          </g>
+        )}
         {config.accessory === "glasses" && (
           <g fill="none" stroke="#2f3c44" strokeWidth="2">
             <circle cx="41" cy="55" r="7" />
@@ -43,7 +54,61 @@ export function Portrait({ config, name, size = "medium" }: PortraitProps) {
         {config.accessory === "cap" && <path d="M28 28 Q50 14 72 28 L75 36 Q50 31 25 36 Z" fill={config.hairColor} />}
         {config.accessory === "beard" && <path d="M34 61 Q50 86 66 61 Q62 83 50 86 Q38 83 34 61" fill={config.hairColor} opacity="0.75" />}
       </svg>
+      {mood && <span className="moodPip" title={mood} />}
     </div>
+  );
+}
+
+function mouthFor(expression: PortraitConfig["expression"]) {
+  if (expression === "worried" || expression === "sad") return "M42 70 Q50 66 58 70";
+  if (expression === "serious" || expression === "angry" || expression === "suspicious") return "M42 69 L58 69";
+  if (expression === "smug" || expression === "wry") return "M42 67 Q54 74 62 66";
+  if (expression === "flirty" || expression === "amused") return "M40 66 Q50 76 61 67";
+  return "M40 67 Q50 75 60 67";
+}
+
+function Eyes({ expression }: { expression: PortraitConfig["expression"] }) {
+  if (expression === "angry") {
+    return (
+      <g>
+        <path d="M36 51 L45 55" stroke="#2a2a2a" strokeWidth="2.4" strokeLinecap="round" />
+        <path d="M64 51 L55 55" stroke="#2a2a2a" strokeWidth="2.4" strokeLinecap="round" />
+        <circle cx="41" cy="56" r="2.1" fill="#2a2a2a" />
+        <circle cx="59" cy="56" r="2.1" fill="#2a2a2a" />
+      </g>
+    );
+  }
+  if (expression === "suspicious" || expression === "smug") {
+    return (
+      <g>
+        <path d="M37 53 Q41 51 45 53" stroke="#2a2a2a" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+        <circle cx="59" cy="55" r="2.4" fill="#2a2a2a" />
+      </g>
+    );
+  }
+  if (expression === "sad" || expression === "worried") {
+    return (
+      <g>
+        <path d="M36 51 Q41 48 46 51" stroke="#2a2a2a" strokeWidth="1.8" fill="none" />
+        <path d="M54 51 Q59 48 64 51" stroke="#2a2a2a" strokeWidth="1.8" fill="none" />
+        <circle cx="41" cy="56" r="2.2" fill="#2a2a2a" />
+        <circle cx="59" cy="56" r="2.2" fill="#2a2a2a" />
+      </g>
+    );
+  }
+  if (expression === "flirty" || expression === "amused") {
+    return (
+      <g>
+        <path d="M36 55 Q41 58 46 55" stroke="#2a2a2a" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+        <circle cx="59" cy="55" r="2.4" fill="#2a2a2a" />
+      </g>
+    );
+  }
+  return (
+    <g>
+      <circle cx="41" cy="55" r="2.4" fill="#2a2a2a" />
+      <circle cx="59" cy="55" r="2.4" fill="#2a2a2a" />
+    </g>
   );
 }
 

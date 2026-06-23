@@ -15,6 +15,18 @@
   --rose: #a65f62;
   --clay: #b56b4a;
   --focus: #1c6fb7;
+  --sea: #78adbb;
+  --navy: #173841;
+  --moss: #5f8b4c;
+  --heather: #80609c;
+  --amber: #d69a42;
+  --cream: #fff7e8;
+  --blush: #d78392;
+  --danger: #a94e55;
+  --trust: #4f8a72;
+  --card: rgba(255, 250, 240, 0.92);
+  --shadow-soft: 0 18px 50px rgba(31, 43, 46, 0.12);
+  --radius: 0.8rem;
 }
 
 * {
@@ -28,6 +40,7 @@ body {
   background:
     linear-gradient(180deg, rgba(47, 98, 112, 0.18), rgba(232, 239, 231, 0.92) 34rem),
     radial-gradient(circle at top left, rgba(189, 138, 58, 0.18), transparent 25rem),
+    repeating-linear-gradient(45deg, rgba(31, 43, 46, 0.018) 0 1px, transparent 1px 10px),
     #e8efe7;
 }
 
@@ -108,6 +121,15 @@ p {
   font-size: 1.2rem;
 }
 
+.saveNotice {
+  max-width: 42rem;
+  border: 1px solid rgba(255, 250, 240, 0.45);
+  border-radius: 0.5rem;
+  background: rgba(31, 43, 46, 0.28);
+  padding: 0.8rem;
+  color: #fff7df;
+}
+
 .titleActions,
 .buttonRow {
   display: flex;
@@ -162,7 +184,7 @@ p {
   gap: 1rem;
   padding: 0.75rem 1rem;
   border-bottom: 1px solid rgba(31, 43, 46, 0.12);
-  background: rgba(255, 250, 240, 0.92);
+  background: rgba(255, 247, 232, 0.92);
   backdrop-filter: blur(14px);
 }
 
@@ -198,17 +220,18 @@ p {
 .navTab {
   flex: 0 0 auto;
   border: 1px solid transparent;
-  border-radius: 0.45rem;
-  background: transparent;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.38);
   padding: 0.6rem 0.75rem;
   color: var(--muted);
   font-weight: 750;
 }
 
 .navTab.active {
-  border-color: var(--line);
-  background: #ffffff;
-  color: var(--blue);
+  border-color: rgba(47, 98, 112, 0.25);
+  background: var(--navy);
+  color: var(--cream);
+  box-shadow: 0 10px 22px rgba(23, 56, 65, 0.18);
 }
 
 .mainPanel,
@@ -564,10 +587,1312 @@ select {
 .choiceCard:hover {
   border-color: var(--blue);
   background: #f6fbfb;
+  transform: translateY(-2px);
 }
 
 .choiceCard span {
   color: var(--muted);
+}
+
+.objectiveCard {
+  border: 1px solid rgba(47, 98, 112, 0.24);
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, #fffaf0, #edf6f2);
+  padding: 1rem;
+  box-shadow: 0 16px 34px rgba(31, 43, 46, 0.08);
+}
+
+.objectiveCard h2 {
+  font-size: 1.05rem;
+  line-height: 1.35;
+}
+
+.objectiveMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.objectiveMeta span,
+.toneBadge,
+.locationBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 1.75rem;
+  border-radius: 999px;
+  background: rgba(47, 98, 112, 0.12);
+  padding: 0.25rem 0.6rem;
+  color: var(--blue);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.mapScreen,
+.mapGrid,
+.mapColumn,
+.mapSide {
+  display: grid;
+  gap: 1rem;
+}
+
+.mapGrid {
+  grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
+  align-items: start;
+}
+
+.skerryMap {
+  position: relative;
+  overflow: hidden;
+  min-height: 36rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background:
+    radial-gradient(circle at 24% 16%, rgba(255, 250, 240, 0.85), transparent 11rem),
+    linear-gradient(180deg, #8eb8bd, #d5e6df);
+  box-shadow: 0 16px 40px rgba(31, 43, 46, 0.1);
+}
+
+.islandShape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.mapMarker {
+  position: absolute;
+  display: grid;
+  min-width: 7rem;
+  max-width: 9rem;
+  transform: translate(-50%, -50%);
+  justify-items: center;
+  gap: 0.25rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: rgba(255, 250, 240, 0.88);
+  padding: 0.45rem;
+  color: var(--ink);
+  box-shadow: 0 12px 24px rgba(31, 43, 46, 0.14);
+  font-size: 0.78rem;
+  font-weight: 900;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.mapMarker:hover {
+  transform: translate(-50%, -54%);
+  box-shadow: 0 18px 30px rgba(31, 43, 46, 0.2);
+}
+
+.mapMarker.drama::after {
+  position: absolute;
+  inset: -0.25rem;
+  content: "";
+  border: 2px solid rgba(166, 95, 98, 0.55);
+  border-radius: 0.65rem;
+  animation: markerPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes markerPulse {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.06);
+  }
+}
+
+.locationPanel,
+.locationTitle,
+.miniPeople {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.locationTitle {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+}
+
+.miniPeople {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.miniPeople button {
+  border: 1px solid var(--line);
+  border-radius: 0.45rem;
+  background: #ffffff;
+  padding: 0.5rem;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.pulseList {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding-left: 1.15rem;
+  color: var(--muted);
+}
+
+.hookList {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.hookCard {
+  display: grid;
+  gap: 0.2rem;
+  border: 1px solid rgba(31, 43, 46, 0.12);
+  border-radius: 0.45rem;
+  background: rgba(255, 255, 255, 0.68);
+  padding: 0.7rem;
+}
+
+.hookCard span,
+.hookCard small {
+  color: var(--muted);
+}
+
+.gossipFeed {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.gossipMessage {
+  border: 1px solid rgba(31, 43, 46, 0.12);
+  border-left: 0.3rem solid var(--blue);
+  border-radius: 0.5rem;
+  background: #ffffff;
+  padding: 0.75rem;
+  animation: slideIn 220ms ease both;
+}
+
+.gossipMessage p {
+  margin-bottom: 0;
+}
+
+.gossipMessage.comic {
+  border-left-color: var(--gold);
+}
+
+.gossipMessage.mean,
+.gossipMessage.dramatic {
+  border-left-color: var(--rose);
+}
+
+.gossipMessage.clue {
+  border-left-color: #735b92;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.episodeSceneLayout {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.34fr) minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.episodeSidebar {
+  display: grid;
+  align-self: start;
+  gap: 1rem;
+  position: sticky;
+  top: 5.25rem;
+}
+
+.scenePanel {
+  animation: fadeIn 200ms ease both;
+}
+
+.sceneHeader {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.sceneSubtitle {
+  color: var(--blue);
+  font-weight: 800;
+}
+
+.sceneProgress {
+  margin: 0.75rem 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.narrationCard {
+  border: 1px solid rgba(31, 43, 46, 0.12);
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, #ffffff, #f5eee0);
+  padding: 1rem;
+}
+
+.narrationCard p:last-child {
+  color: var(--ink);
+  font-size: 1.05rem;
+}
+
+.dialogueStack {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.dialogueBubble {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.78);
+  padding: 0.75rem;
+}
+
+.dialogueBubble strong {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.dialogueBubble strong span {
+  color: var(--clay);
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.dialogueBubble p {
+  margin-bottom: 0;
+  color: var(--ink);
+}
+
+.resultPanel {
+  border: 1px solid rgba(82, 121, 95, 0.35);
+  border-radius: 0.5rem;
+  background: #edf6f2;
+  padding: 1rem;
+  animation: fadeIn 180ms ease both;
+}
+
+.resultGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.resultGrid div {
+  display: grid;
+  gap: 0.2rem;
+  border-radius: 0.45rem;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 0.65rem;
+}
+
+.resultGrid span {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.choiceCard small {
+  color: var(--clay);
+  font-weight: 750;
+}
+
+.secretKnown {
+  background: rgba(166, 95, 98, 0.16);
+  color: #7a3439;
+}
+
+.paperPanel {
+  position: relative;
+  border: 1px solid rgba(49, 95, 104, 0.18);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(135deg, rgba(255, 250, 240, 0.98), rgba(244, 235, 216, 0.92)),
+    repeating-linear-gradient(0deg, rgba(31, 43, 46, 0.025) 0 1px, transparent 1px 9px);
+  box-shadow: var(--shadow-soft);
+  padding: 1rem;
+}
+
+.paperTape {
+  position: absolute;
+  top: -0.65rem;
+  left: 1.25rem;
+  width: 4.5rem;
+  height: 1.2rem;
+  border-radius: 0.2rem;
+  background: rgba(229, 203, 145, 0.62);
+  transform: rotate(-3deg);
+}
+
+.gameHud {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.3fr) minmax(0, 1fr);
+  gap: 0.75rem;
+  border: 1px solid rgba(23, 56, 65, 0.18);
+  border-radius: var(--radius);
+  background: rgba(255, 247, 232, 0.9);
+  padding: 0.75rem;
+  box-shadow: 0 14px 35px rgba(31, 43, 46, 0.08);
+}
+
+.hudIdentity {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.hudIdentity div {
+  display: grid;
+}
+
+.hudIdentity span:last-child {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.hudAvatar {
+  display: grid;
+  width: 3rem;
+  height: 3rem;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--navy), var(--heather));
+  color: var(--cream);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.35rem;
+  font-weight: 900;
+}
+
+.hudStats {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.hudStat {
+  position: relative;
+  overflow: hidden;
+  min-height: 3rem;
+  border-radius: 0.65rem;
+  background: rgba(255, 255, 255, 0.68);
+  padding: 0.45rem;
+}
+
+.hudStat span,
+.hudStat strong {
+  position: relative;
+  z-index: 1;
+  display: block;
+}
+
+.hudStat span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.hudStat i {
+  position: absolute;
+  inset: auto 0 0;
+  height: 0.35rem;
+  background: linear-gradient(90deg, var(--trust), var(--sea));
+}
+
+.storybookMap {
+  min-height: 42rem;
+  border: 8px solid rgba(255, 250, 240, 0.78);
+  border-radius: 1.25rem;
+  background: var(--sea);
+  box-shadow:
+    inset 0 0 0 1px rgba(23, 56, 65, 0.18),
+    0 24px 70px rgba(31, 43, 46, 0.16);
+}
+
+.illustratedIsland {
+  filter: drop-shadow(0 20px 18px rgba(23, 56, 65, 0.18));
+}
+
+.storybookMarker {
+  position: absolute;
+  display: grid;
+  min-width: 7.4rem;
+  max-width: 9.4rem;
+  transform: translate(-50%, -50%);
+  justify-items: center;
+  gap: 0.2rem;
+  border: 0;
+  border-radius: 0.9rem;
+  background: rgba(255, 247, 232, 0.94);
+  padding: 0.45rem 0.5rem;
+  color: var(--ink);
+  box-shadow: 0 14px 28px rgba(31, 43, 46, 0.16);
+  font-size: 0.72rem;
+  font-weight: 900;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+.storybookMarker:hover,
+.storybookMarker.selected {
+  transform: translate(-50%, -56%);
+  background: #fffdfa;
+  box-shadow: 0 22px 36px rgba(31, 43, 46, 0.22);
+}
+
+.storybookMarker.active::after {
+  position: absolute;
+  inset: -0.35rem;
+  content: "";
+  border: 2px solid rgba(214, 154, 66, 0.75);
+  border-radius: 1.1rem;
+  animation: markerPulse 1.8s ease-in-out infinite;
+}
+
+.markerBuilding {
+  position: relative;
+  display: block;
+  width: 2.5rem;
+  height: 2.2rem;
+}
+
+.markerBuilding::before,
+.markerBuilding::after,
+.markerBuilding i {
+  position: absolute;
+  content: "";
+}
+
+.markerBuilding::before {
+  inset: 0.75rem 0.35rem 0.1rem;
+  border-radius: 0.2rem;
+  background: var(--navy);
+}
+
+.markerBuilding::after {
+  left: 0.55rem;
+  top: 0.18rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  background: var(--amber);
+  transform: rotate(45deg);
+}
+
+.marker-ferry::before,
+.marker-harbour::before {
+  inset: 0.9rem 0.2rem 0.35rem;
+  clip-path: polygon(0 0, 100% 0, 78% 100%, 18% 100%);
+  background: var(--navy);
+}
+
+.marker-ferry::after,
+.marker-harbour::after {
+  left: 0.45rem;
+  top: 0.45rem;
+  width: 1.6rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: var(--cream);
+  transform: none;
+}
+
+.marker-pub::before {
+  background: #8e4b32;
+}
+
+.marker-shop::before {
+  background: var(--moss);
+}
+
+.marker-bnb::before {
+  background: var(--heather);
+}
+
+.marker-hall::before {
+  background: var(--amber);
+}
+
+.marker-house::before {
+  background: #646a78;
+}
+
+.markerLabel {
+  text-align: center;
+  line-height: 1.05;
+}
+
+.markerBadges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.2rem;
+}
+
+.markerBadges b,
+.statusBadge {
+  border-radius: 999px;
+  background: rgba(128, 96, 156, 0.14);
+  padding: 0.18rem 0.45rem;
+  color: var(--heather);
+  font-size: 0.66rem;
+  font-weight: 900;
+}
+
+.markerPeople {
+  display: flex;
+  gap: 0.15rem;
+}
+
+.markerPeople i {
+  display: grid;
+  width: 1.25rem;
+  height: 1.25rem;
+  place-items: center;
+  border: 1px solid rgba(23, 56, 65, 0.18);
+  border-radius: 50%;
+  background: #fff;
+  font-style: normal;
+  font-size: 0.62rem;
+}
+
+.scenePulse {
+  position: absolute;
+  top: -0.5rem;
+  right: -0.35rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: var(--danger);
+  box-shadow: 0 0 0 0 rgba(169, 78, 85, 0.45);
+  animation: pulseDot 1.4s infinite;
+}
+
+@keyframes pulseDot {
+  70% {
+    box-shadow: 0 0 0 0.8rem rgba(169, 78, 85, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(169, 78, 85, 0);
+  }
+}
+
+.markerTooltip {
+  position: absolute;
+  z-index: 3;
+  bottom: calc(100% + 0.6rem);
+  left: 50%;
+  width: min(15rem, 70vw);
+  transform: translateX(-50%) translateY(0.3rem);
+  border-radius: 0.6rem;
+  background: var(--navy);
+  padding: 0.55rem;
+  color: var(--cream);
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: var(--shadow-soft);
+}
+
+.storybookMarker:hover .markerTooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.locationSheet {
+  overflow: hidden;
+  border: 1px solid rgba(49, 95, 104, 0.18);
+  border-radius: 1rem;
+  background: var(--card);
+  box-shadow: var(--shadow-soft);
+}
+
+.locationSheetBody {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+.locationSheetHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.locationAtmosphere {
+  color: var(--ink);
+  font-weight: 650;
+}
+
+.statusBadgeRow,
+.consequenceChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.statusBadge.secret,
+.statusBadge.muted {
+  background: rgba(47, 98, 112, 0.12);
+  color: var(--blue);
+}
+
+.locationNotes {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.locationNotes p {
+  display: grid;
+  gap: 0.12rem;
+  margin: 0;
+  border-left: 3px solid rgba(214, 154, 66, 0.75);
+  padding-left: 0.65rem;
+}
+
+.locationNotes strong {
+  color: var(--ink);
+}
+
+.locationCastStrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.locationCastStrip button {
+  display: grid;
+  justify-items: center;
+  gap: 0.25rem;
+  border: 1px solid var(--line);
+  border-radius: 0.7rem;
+  background: #fff;
+  padding: 0.35rem;
+  font-weight: 800;
+}
+
+.locationActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.islandPulse ul {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding-left: 1rem;
+}
+
+.locationBackdrop {
+  position: relative;
+  overflow: hidden;
+  min-height: 12rem;
+  border-radius: 0.8rem;
+  background: linear-gradient(180deg, #91bcc9, #dce9e0);
+}
+
+.locationBackdrop.compact {
+  min-height: 8rem;
+  border-radius: 0;
+}
+
+.backdropSky,
+.backdropHorizon,
+.ferryBoat,
+.waveLine,
+.gull,
+.ropePost,
+.pubSign,
+.fairyLights,
+.barShelf,
+.shopAwning,
+.noticeBoard,
+.counterShape,
+.farmField,
+.farmFence,
+.sheep,
+.guestHouse,
+.vacancySign,
+.gardenDots,
+.hallShape,
+.bunting,
+.posterWall,
+.moonShape,
+.stoneWall,
+.windLine {
+  position: absolute;
+}
+
+.backdropHorizon {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 42%;
+  background: rgba(255, 250, 240, 0.28);
+}
+
+.ferryBoat {
+  left: 14%;
+  bottom: 23%;
+  width: 6rem;
+  height: 1.7rem;
+  clip-path: polygon(0 0, 100% 0, 82% 100%, 16% 100%);
+  background: var(--navy);
+}
+
+.waveLine {
+  left: 8%;
+  right: 8%;
+  height: 0.35rem;
+  border-top: 2px dashed rgba(255, 255, 255, 0.78);
+}
+
+.waveOne {
+  bottom: 18%;
+}
+
+.waveTwo {
+  bottom: 10%;
+}
+
+.gull {
+  width: 1.2rem;
+  height: 0.45rem;
+  border-top: 2px solid var(--navy);
+  border-radius: 50%;
+}
+
+.gullOne {
+  top: 24%;
+  right: 22%;
+}
+
+.gullTwo {
+  top: 32%;
+  right: 15%;
+}
+
+.ropePost {
+  right: 13%;
+  bottom: 13%;
+  width: 0.4rem;
+  height: 3rem;
+  background: #795b3c;
+}
+
+.backdrop-selkie-arms {
+  background: linear-gradient(180deg, #744239, #d59b4c);
+}
+
+.pubSign {
+  top: 22%;
+  left: 12%;
+  border-radius: 999px;
+  background: var(--cream);
+  padding: 0.35rem 0.65rem;
+  color: #744239;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 900;
+}
+
+.fairyLights {
+  top: 18%;
+  left: 32%;
+  width: 50%;
+  height: 1rem;
+  border-top: 2px dotted #ffe2a0;
+}
+
+.barShelf {
+  right: 10%;
+  width: 30%;
+  height: 0.45rem;
+  background: rgba(255, 250, 240, 0.55);
+}
+
+.shelfOne {
+  bottom: 34%;
+}
+
+.shelfTwo {
+  bottom: 24%;
+}
+
+.backdrop-wee-shop {
+  background: linear-gradient(180deg, #dfe9d4, #fff4d9);
+}
+
+.shopAwning {
+  top: 20%;
+  left: 14%;
+  width: 42%;
+  height: 1.2rem;
+  background: repeating-linear-gradient(90deg, var(--moss) 0 1rem, var(--cream) 1rem 2rem);
+}
+
+.noticeBoard {
+  right: 15%;
+  bottom: 25%;
+  width: 5rem;
+  height: 3rem;
+  background: #c89b62;
+}
+
+.counterShape {
+  left: 18%;
+  bottom: 20%;
+  width: 34%;
+  height: 2rem;
+  background: rgba(95, 139, 76, 0.55);
+}
+
+.backdrop-macrae-farm {
+  background: linear-gradient(180deg, #9cc2d0, #78a564);
+}
+
+.farmField {
+  bottom: 0;
+  height: 38%;
+  border-top: 2px solid rgba(255, 250, 240, 0.55);
+}
+
+.fieldOne {
+  left: 0;
+  width: 50%;
+  background: rgba(223, 207, 117, 0.3);
+}
+
+.fieldTwo {
+  right: 0;
+  width: 50%;
+  background: rgba(92, 132, 69, 0.25);
+}
+
+.farmFence {
+  left: 10%;
+  right: 10%;
+  bottom: 28%;
+  height: 0.3rem;
+  background: #fffaf0;
+}
+
+.sheep {
+  width: 1.6rem;
+  height: 1rem;
+  border-radius: 999px;
+  background: #fff;
+}
+
+.sheepOne {
+  left: 30%;
+  bottom: 34%;
+}
+
+.sheepTwo {
+  left: 62%;
+  bottom: 25%;
+}
+
+.backdrop-rowan-house {
+  background: linear-gradient(180deg, #cbb8d8, #f8e4d0);
+}
+
+.guestHouse,
+.hallShape {
+  left: 18%;
+  bottom: 18%;
+  width: 42%;
+  height: 4.2rem;
+  border-radius: 0.35rem;
+  background: var(--cream);
+  box-shadow: inset 0 1rem 0 rgba(128, 96, 156, 0.2);
+}
+
+.vacancySign {
+  right: 14%;
+  bottom: 28%;
+  border-radius: 0.3rem;
+  background: var(--navy);
+  padding: 0.25rem 0.45rem;
+  color: var(--cream);
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.gardenDots {
+  left: 18%;
+  right: 18%;
+  bottom: 9%;
+  height: 0.6rem;
+  background: radial-gradient(circle, var(--blush) 0 3px, transparent 4px);
+  background-size: 1rem 0.6rem;
+}
+
+.backdrop-village-hall,
+.backdrop-school-bus-stop {
+  background: linear-gradient(180deg, #ced8d4, #f1d19c);
+}
+
+.bunting {
+  top: 20%;
+  left: 15%;
+  right: 15%;
+  height: 1rem;
+  border-top: 2px dashed var(--danger);
+}
+
+.posterWall {
+  right: 15%;
+  bottom: 18%;
+  width: 4.5rem;
+  height: 3.2rem;
+  background: repeating-linear-gradient(45deg, #fff 0 0.7rem, #e9d5a8 0.7rem 1.4rem);
+}
+
+.backdrop-beach-path {
+  background: linear-gradient(180deg, #263f57, #7197a0);
+}
+
+.moonShape {
+  top: 16%;
+  right: 18%;
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: 50%;
+  background: #fff4cb;
+}
+
+.stoneWall {
+  left: 0;
+  right: 0;
+  bottom: 18%;
+  height: 1.5rem;
+  background: repeating-linear-gradient(90deg, #6f7780 0 1.8rem, #59616a 1.8rem 3.4rem);
+}
+
+.windLine {
+  left: 18%;
+  width: 45%;
+  border-top: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+}
+
+.windOne {
+  top: 35%;
+}
+
+.windTwo {
+  top: 46%;
+  left: 35%;
+}
+
+.scenePanel {
+  overflow: hidden;
+  padding-top: 0;
+}
+
+.sceneHeader,
+.sceneProgress,
+.narrationCard,
+.involvedGrid,
+.dialogueStack,
+.choiceGrid,
+.consequencePanel,
+.cliffhanger {
+  position: relative;
+  z-index: 1;
+}
+
+.sceneHeader {
+  padding-top: 1rem;
+}
+
+.narrationCard {
+  box-shadow: 0 12px 28px rgba(31, 43, 46, 0.08);
+}
+
+.dialogueBubble {
+  border-radius: 1rem 1rem 1rem 0.3rem;
+  box-shadow: 0 10px 22px rgba(31, 43, 46, 0.07);
+}
+
+.narrativeChoice {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.9rem;
+  box-shadow: 0 12px 24px rgba(31, 43, 46, 0.08);
+}
+
+.narrativeChoice::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(90deg, rgba(214, 154, 66, 0.12), transparent);
+  opacity: 0;
+}
+
+.narrativeChoice:hover::before {
+  opacity: 1;
+}
+
+.choiceTopline {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.riskMeter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.18rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.riskMeter i {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: rgba(31, 43, 46, 0.18);
+}
+
+.risk-low .riskMeter i:first-child,
+.risk-medium .riskMeter i:nth-child(-n + 2),
+.risk-high .riskMeter i {
+  background: var(--danger);
+}
+
+.consequencePanel {
+  border: 1px solid rgba(79, 138, 114, 0.28);
+  border-radius: 1rem;
+  background:
+    linear-gradient(135deg, rgba(237, 246, 242, 0.98), rgba(255, 250, 240, 0.96)),
+    repeating-linear-gradient(0deg, rgba(31, 43, 46, 0.025) 0 1px, transparent 1px 8px);
+  padding: 1rem;
+  box-shadow: 0 18px 36px rgba(31, 43, 46, 0.1);
+  animation: resultPop 220ms ease both;
+}
+
+.consequenceHeader h2 {
+  margin-bottom: 0.35rem;
+}
+
+.chip {
+  border-radius: 999px;
+  padding: 0.35rem 0.65rem;
+  background: rgba(47, 98, 112, 0.12);
+  color: var(--blue);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.chip.positive {
+  background: rgba(79, 138, 114, 0.15);
+  color: #2f6e55;
+}
+
+.chip.negative,
+.chip.warning {
+  background: rgba(169, 78, 85, 0.14);
+  color: var(--danger);
+}
+
+.chip.gossip {
+  background: rgba(214, 154, 66, 0.18);
+  color: #946224;
+}
+
+.chip.hook,
+.chip.relationship {
+  background: rgba(128, 96, 156, 0.16);
+  color: var(--heather);
+}
+
+@keyframes resultPop {
+  from {
+    opacity: 0;
+    transform: scale(0.985) translateY(0.35rem);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.toastStack {
+  position: fixed;
+  z-index: 20;
+  right: 1rem;
+  top: 5rem;
+  display: grid;
+  gap: 0.5rem;
+  width: min(20rem, calc(100vw - 2rem));
+}
+
+.toastNotice {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  border: 1px solid rgba(255, 250, 240, 0.18);
+  border-radius: 999px;
+  background: rgba(23, 56, 65, 0.94);
+  padding: 0.65rem 0.85rem;
+  color: var(--cream);
+  box-shadow: var(--shadow-soft);
+  animation: slideIn 220ms ease both;
+  font-weight: 900;
+}
+
+.toastNotice span {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+  background: var(--amber);
+}
+
+.portrait {
+  position: relative;
+  border: 2px solid var(--family-accent, rgba(31, 43, 46, 0.16));
+  border-radius: 50% 50% 42% 42%;
+  box-shadow: 0 10px 22px rgba(31, 43, 46, 0.12);
+}
+
+.moodPip {
+  position: absolute;
+  right: 0.15rem;
+  bottom: 0.1rem;
+  width: 0.72rem;
+  height: 0.72rem;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--amber);
+}
+
+.castFilters {
+  display: grid;
+  grid-template-columns: 1.5fr repeat(3, minmax(150px, 1fr));
+  gap: 0.75rem;
+}
+
+.castBoard {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.castFamilyGroup {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.castGroupHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.castGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.castCard {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.9rem;
+  border: 1px solid rgba(49, 95, 104, 0.18);
+  border-radius: 1rem;
+  background: rgba(255, 250, 240, 0.94);
+  padding: 0.85rem;
+  color: var(--ink);
+  text-align: left;
+  box-shadow: 0 14px 32px rgba(31, 43, 46, 0.08);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.castCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 22px 38px rgba(31, 43, 46, 0.14);
+}
+
+.castCardBody {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.castNameLine {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.castNameLine span {
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.castCard p {
+  margin-bottom: 0;
+}
+
+.settingsPanel {
+  max-width: 42rem;
+}
+
+.journalNotebook .panel {
+  position: relative;
+  border-color: rgba(184, 135, 82, 0.28);
+  border-radius: 0.55rem 1rem 0.65rem 1rem;
+  background:
+    linear-gradient(135deg, rgba(255, 250, 240, 0.98), rgba(247, 237, 217, 0.94)),
+    repeating-linear-gradient(0deg, transparent 0 1.65rem, rgba(47, 98, 112, 0.07) 1.65rem calc(1.65rem + 1px));
+}
+
+.journalNotebook .panel::before {
+  position: absolute;
+  top: -0.45rem;
+  left: 1.2rem;
+  width: 3.4rem;
+  height: 0.9rem;
+  content: "";
+  border-radius: 0.18rem;
+  background: rgba(214, 154, 66, 0.36);
+  transform: rotate(-2deg);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(0.35rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .cliffhanger {
@@ -735,6 +2060,9 @@ select {
 
   .splitHeader,
   .episodeLayout,
+  .episodeSceneLayout,
+  .mapGrid,
+  .gameHud,
   .twoColumns,
   .profileHero {
     grid-template-columns: 1fr;
@@ -745,7 +2073,8 @@ select {
     align-items: start;
   }
 
-  .recapPanel {
+  .recapPanel,
+  .episodeSidebar {
     position: static;
   }
 
@@ -753,7 +2082,10 @@ select {
   .involvedGrid,
   .cardGrid,
   .familyCards,
-  .locationGrid {
+  .locationGrid,
+  .hudStats,
+  .castFilters,
+  .castGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -770,8 +2102,37 @@ select {
   .cardGrid,
   .familyCards,
   .locationGrid,
-  .relationshipRow {
+  .relationshipRow,
+  .resultGrid,
+  .hudStats,
+  .castFilters,
+  .castGrid,
+  .castCard {
     grid-template-columns: 1fr;
+  }
+
+  .skerryMap {
+    min-height: 30rem;
+  }
+
+  .mapMarker {
+    min-width: 5.8rem;
+    font-size: 0.68rem;
+  }
+
+  .storybookMap {
+    min-height: 34rem;
+  }
+
+  .storybookMarker {
+    min-width: 5.9rem;
+    font-size: 0.62rem;
+  }
+
+  .toastStack {
+    top: auto;
+    right: 0.75rem;
+    bottom: 0.75rem;
   }
 
   .characterCard {

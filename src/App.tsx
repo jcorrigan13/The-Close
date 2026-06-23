@@ -5,24 +5,29 @@ import { CharacterCreation } from "./components/CharacterCreation";
 import { EpisodeScreen } from "./components/EpisodeScreen";
 import { FamilyScreen } from "./components/FamilyScreen";
 import { FinaleScreen } from "./components/FinaleScreen";
-import { IslandOverview } from "./components/IslandOverview";
+import { GossipScreen } from "./components/GossipScreen";
 import { JournalScreen } from "./components/JournalScreen";
 import { Navigation } from "./components/Navigation";
 import { RelationshipScreen } from "./components/RelationshipScreen";
+import { SettingsScreen } from "./components/SettingsScreen";
+import { SkerrybraeMap } from "./components/SkerrybraeMap";
 import { StartScreen } from "./components/StartScreen";
+import { ToastNotification } from "./components/ToastNotification";
 import { characters } from "./data/characters";
-import { applyChoice, createNewGame } from "./engine/gameEngine";
-import { clearSave, hasSave, loadGame, saveGame } from "./storage/saveGame";
-import type { Choice, GameState, Player, Screen } from "./types";
+import { applySceneChoice, createNewGame } from "./engine/gameEngine";
+import { clearSave, hasLegacySave, hasSave, loadGame, saveGame } from "./storage/saveGame";
+import type { GameState, Player, SceneChoice, Screen } from "./types";
 
 function App() {
   const [screen, setScreen] = useState<Screen>("start");
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [saveAvailable, setSaveAvailable] = useState(false);
+  const [legacySaveAvailable, setLegacySaveAvailable] = useState(false);
   const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(null);
 
   useEffect(() => {
     setSaveAvailable(hasSave());
+    setLegacySaveAvailable(hasLegacySave());
   }, []);
 
   const selectedCharacter = useMemo(
@@ -38,7 +43,7 @@ function App() {
     const save = loadGame();
     if (save) {
       setGameState(save);
-      setScreen(save.endingId ? "finale" : "overview");
+      setScreen(save.endingId ? "finale" : "map");
     }
   };
 
@@ -47,12 +52,12 @@ function App() {
     setGameState(nextState);
     saveGame(nextState);
     setSaveAvailable(true);
-    setScreen("overview");
+    setScreen("map");
   };
 
-  const chooseEpisodeOption = (episodeId: string, choice: Choice) => {
+  const chooseEpisodeOption = (episodeId: string, sceneId: string, choice: SceneChoice) => {
     if (!gameState) return;
-    const nextState = applyChoice(gameState, episodeId, choice);
+    const nextState = applySceneChoice(gameState, episodeId, sceneId, choice);
     setGameState(nextState);
     saveGame(nextState);
     setSaveAvailable(true);
@@ -65,6 +70,7 @@ function App() {
     clearSave();
     setGameState(null);
     setSaveAvailable(false);
+    setLegacySaveAvailable(false);
     setSelectedCharacterId(null);
     setScreen("start");
   };
@@ -79,16 +85,14 @@ function App() {
       return <CharacterCreation onCreate={createGame} onBack={() => setScreen("start")} />;
     }
 
-    return <StartScreen hasSave={saveAvailable} onNewGame={startNewGame} onContinue={continueGame} />;
+    return <StartScreen hasSave={saveAvailable} hasLegacySave={legacySaveAvailable} onNewGame={startNewGame} onContinue={continueGame} />;
   }
 
   return (
     <div className="appShell">
       <Navigation activeScreen={screen} onNavigate={setScreen} hasEnding={Boolean(gameState.endingId)} />
       <main className="mainPanel">
-        {screen === "overview" && (
-          <IslandOverview state={gameState} onStartEpisode={() => setScreen("episode")} onOpenProfile={openProfile} />
-        )}
+        {screen === "map" && <SkerrybraeMap state={gameState} onStartEpisode={() => setScreen("episode")} onOpenProfile={openProfile} />}
         {screen === "episode" && <EpisodeScreen state={gameState} onChoose={chooseEpisodeOption} />}
         {screen === "directory" && <CharacterDirectory state={gameState} onOpenProfile={openProfile} />}
         {screen === "profile" && (
@@ -97,8 +101,11 @@ function App() {
         {screen === "families" && <FamilyScreen />}
         {screen === "relationships" && <RelationshipScreen state={gameState} onOpenProfile={openProfile} />}
         {screen === "journal" && <JournalScreen state={gameState} />}
+        {screen === "gossip" && <GossipScreen state={gameState} />}
+        {screen === "settings" && <SettingsScreen state={gameState} onReset={resetSave} />}
         {screen === "finale" && <FinaleScreen state={gameState} onReset={resetSave} />}
       </main>
+      <ToastNotification result={gameState.lastChoiceResult} />
       <button className="ghostButton resetButton" type="button" onClick={resetSave}>
         Reset save
       </button>

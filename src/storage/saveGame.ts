@@ -1,9 +1,11 @@
 import type { GameState } from "../types";
+import { SAVE_VERSION } from "../types";
 
-const SAVE_KEY = "the-close-save-v1";
+const SAVE_KEY = "the-close-save-v2";
+const LEGACY_SAVE_KEY = "the-close-save-v1";
 
 export function saveGame(state: GameState) {
-  localStorage.setItem(SAVE_KEY, JSON.stringify({ ...state, updatedAt: new Date().toISOString() }));
+  localStorage.setItem(SAVE_KEY, JSON.stringify({ ...state, saveVersion: SAVE_VERSION, updatedAt: new Date().toISOString() }));
 }
 
 export function loadGame(): GameState | null {
@@ -11,7 +13,12 @@ export function loadGame(): GameState | null {
   if (!raw) return null;
 
   try {
-    return JSON.parse(raw) as GameState;
+    const parsed = JSON.parse(raw) as GameState;
+    if (parsed.saveVersion !== SAVE_VERSION) {
+      localStorage.removeItem(SAVE_KEY);
+      return null;
+    }
+    return parsed;
   } catch {
     localStorage.removeItem(SAVE_KEY);
     return null;
@@ -22,6 +29,11 @@ export function hasSave() {
   return Boolean(localStorage.getItem(SAVE_KEY));
 }
 
+export function hasLegacySave() {
+  return Boolean(localStorage.getItem(LEGACY_SAVE_KEY));
+}
+
 export function clearSave() {
   localStorage.removeItem(SAVE_KEY);
+  localStorage.removeItem(LEGACY_SAVE_KEY);
 }

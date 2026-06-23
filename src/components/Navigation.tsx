@@ -1,12 +1,13 @@
 import type { Screen } from "../types";
 
 const items: { screen: Screen; label: string }[] = [
-  { screen: "overview", label: "Island" },
+  { screen: "map", label: "Map" },
   { screen: "episode", label: "Episode" },
-  { screen: "directory", label: "Characters" },
-  { screen: "families", label: "Families" },
+  { screen: "directory", label: "Cast" },
   { screen: "relationships", label: "Relationships" },
   { screen: "journal", label: "Journal" },
+  { screen: "gossip", label: "Gossip" },
+  { screen: "settings", label: "Settings" },
 ];
 
 interface NavigationProps {
@@ -18,7 +19,7 @@ interface NavigationProps {
 export function Navigation({ activeScreen, hasEnding, onNavigate }: NavigationProps) {
   return (
     <header className="topBar">
-      <button className="brandButton" type="button" onClick={() => onNavigate("overview")}>
+      <button className="brandButton" type="button" onClick={() => onNavigate("map")}>
         <span className="brandMark">TC</span>
         <span>The Close</span>
       </button>

@@ -1,6 +1,6 @@
 import type { Episode } from "../types";
 
-export const episodes: Episode[] = [
+export const legacyEpisodes = [
   {
     id: "ferry-in",
     title: "The Ferry In",

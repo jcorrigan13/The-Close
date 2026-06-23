@@ -29,6 +29,9 @@ export function CharacterProfile({ character, state, onBack }: CharacterProfileP
             <span className="tag">{character.age}</span>
             <span className="tag">{character.occupation}</span>
             <span className="tag">{location?.name}</span>
+            {character.romanticStatus && <span className="tag muted">{character.romanticStatus}</span>}
+            {character.isTeen && <span className="tag">Teen drama</span>}
+            {character.isSingleParent && <span className="tag">Single parent</span>}
           </div>
         </div>
       </article>
@@ -37,13 +40,25 @@ export function CharacterProfile({ character, state, onBack }: CharacterProfileP
           <h2>Relationship</h2>
           <p className="largeMetric">{relationship?.score ?? 40}</p>
           <p>{relationship?.label ?? "neighbour"}</p>
+          {relationship?.states && <p>States: {relationship.states.join(", ")}</p>}
           <p>Mood: {character.mood}</p>
         </article>
         <article className="panel">
           <h2>Known story</h2>
+          {character.quote && <p>{character.quote}</p>}
           <p>
             <strong>Problem:</strong> {character.unresolvedProblem}
           </p>
+          {character.familyTension && (
+            <p>
+              <strong>Family tension:</strong> {character.familyTension}
+            </p>
+          )}
+          {character.privateWorry && (
+            <p>
+              <strong>Private worry:</strong> {character.privateWorry}
+            </p>
+          )}
           <p>
             <strong>Secret:</strong> {secretKnown ? character.privateSecret : "Not discovered yet."}
           </p>

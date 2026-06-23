@@ -1,3 +1,5 @@
+export const SAVE_VERSION = 2;
+
 export type AgeBracket = "18-24" | "25-34" | "35-49" | "50+";
 
 export type Background =
@@ -41,6 +43,19 @@ export type Stats = Record<StatKey, number>;
 export type StatChanges = Partial<Record<StatKey, number>>;
 
 export type RelationshipLabel =
+  | "trusted"
+  | "suspicious"
+  | "flirty"
+  | "romantic tension"
+  | "complicated"
+  | "protective"
+  | "jealous"
+  | "hurt"
+  | "loyal"
+  | "distant"
+  | "betrayed"
+  | "secret ally"
+  | "family resentment"
   | "family"
   | "friend"
   | "rival"
@@ -49,6 +64,7 @@ export type RelationshipLabel =
   | "partner"
   | "spouse"
   | "co-parent"
+  | "step-family"
   | "enemy"
   | "neighbour"
   | "business rival";
@@ -57,6 +73,8 @@ export interface Relationship {
   characterId: string;
   score: number;
   label: RelationshipLabel;
+  states: RelationshipLabel[];
+  lastChanged?: string;
 }
 
 export interface PortraitConfig {
@@ -66,7 +84,20 @@ export interface PortraitConfig {
   hairColor: string;
   outfitColor: string;
   accessory: "none" | "glasses" | "scarf" | "earrings" | "cap" | "beard";
-  expression: "warm" | "serious" | "wry" | "worried" | "bright";
+  expression:
+    | "neutral"
+    | "warm"
+    | "serious"
+    | "wry"
+    | "worried"
+    | "bright"
+    | "amused"
+    | "angry"
+    | "sad"
+    | "suspicious"
+    | "flirty"
+    | "embarrassed"
+    | "smug";
 }
 
 export interface Character {
@@ -85,6 +116,16 @@ export interface Character {
   unresolvedProblem: string;
   relationships: Relationship[];
   portraitConfig: PortraitConfig;
+  romanticStatus?: string;
+  familyTension?: string;
+  privateWorry?: string;
+  publicReputation?: string;
+  connections?: string[];
+  lastSeenLocationId?: string;
+  playerRelationship?: string;
+  quote?: string;
+  isTeen?: boolean;
+  isSingleParent?: boolean;
 }
 
 export interface Family {
@@ -103,7 +144,27 @@ export interface Location {
   name: string;
   icon: string;
   description: string;
+  associatedFamilyId?: string;
+  mapPosition: { x: number; y: number };
+  status: string;
+  badges: LocationBadge[];
+  activeDrama: string;
+  storyArcTags: string[];
+  gossip: string;
+  socialStatus: string;
 }
+
+export type LocationBadge =
+  | "Drama"
+  | "Secret"
+  | "Romance"
+  | "Family"
+  | "Teen Drama"
+  | "Gossip"
+  | "Conflict"
+  | "Opportunity"
+  | "Locked"
+  | "Consequence";
 
 export interface Player {
   firstName: string;
@@ -135,33 +196,86 @@ export interface ChildCharacter {
   futurePotentialFlags: string[];
 }
 
-export interface Choice {
+export type ChoiceTone =
+  | "Kind"
+  | "Risky"
+  | "Flirty"
+  | "Honest"
+  | "Messy"
+  | "Protective"
+  | "Practical"
+  | "Confrontational"
+  | "Secretive";
+
+export interface DialogueLine {
+  characterId: string;
+  text: string;
+  tone: string;
+}
+
+export interface SceneChoice {
   id: string;
   label: string;
   description: string;
+  toneBadge: ChoiceTone;
+  hintedConsequence: string;
+  immediateResponseText: string;
   statChanges: StatChanges;
   relationshipChanges: Record<string, number>;
+  relationshipStateChanges?: Record<string, RelationshipLabel[]>;
   flagsAdded: string[];
   flagsRemoved: string[];
+  storyArcProgressChanges?: Record<string, number>;
+  gossipUnlocked?: string[];
+  hooksUnlocked?: string[];
+  futureLocks?: string[];
   discoveredSecrets?: string[];
+  nextSceneId?: string;
   recapLine: string;
-  resultText: string;
   childRoute?: ChildRoute["route"];
+}
+
+export type Choice = SceneChoice;
+
+export interface EpisodeScene {
+  id: string;
+  episodeId: string;
+  locationId: string;
+  sceneTitle: string;
+  narration: string;
+  dialogueLines: DialogueLine[];
+  involvedCharacterIds: string[];
+  mood: string;
+  choices: SceneChoice[];
+  defaultNextSceneId?: string;
 }
 
 export interface Episode {
   id: string;
-  title: string;
   episodeNumber: number;
-  requiredFlags: string[];
-  blockedFlags: string[];
-  ambitionTags: Ambition[];
-  involvedCharacterIds: string[];
-  setupText: string;
-  choices: Choice[];
-  resultText: string;
-  recapText: string;
-  cliffhangerText: string;
+  title: string;
+  subtitle: string;
+  previouslyText: string;
+  objectiveText: string;
+  locationIds: string[];
+  storyArcTags: string[];
+  scenes: EpisodeScene[];
+  finalRecap: string;
+  cliffhanger: string;
+  possibleEndStates: string[];
+  locked?: boolean;
+}
+
+export interface ChoiceResult {
+  choiceLabel: string;
+  immediateResponseText: string;
+  statChanges: StatChanges;
+  relationshipChanges: Record<string, number>;
+  relationshipStateChanges: Record<string, RelationshipLabel[]>;
+  gossipUnlocked: string[];
+  hooksUnlocked: string[];
+  futureLocks: string[];
+  recapLine: string;
 }
 
 export interface RecapEntry {
@@ -170,6 +284,7 @@ export interface RecapEntry {
   choiceLabel: string;
   recapLine: string;
   resultText: string;
+  sceneTitle?: string;
 }
 
 export interface Ending {
@@ -182,15 +297,45 @@ export interface Ending {
   requiredStats?: Partial<Record<StatKey, { min?: number; max?: number }>>;
 }
 
+export interface StoryHook {
+  id: string;
+  title: string;
+  clueText: string;
+  relatedCharacters: string[];
+  relatedLocation: string;
+  stage: number;
+  discovered: boolean;
+  resolved: boolean;
+  hiddenDetails: string;
+}
+
+export interface GossipMessage {
+  id: string;
+  author: string;
+  text: string;
+  tone: "comic" | "clue" | "mean" | "warm" | "dramatic";
+  episodeNumber?: number;
+  locationId?: string;
+  relatedFlags?: string[];
+}
+
 export interface GameState {
+  saveVersion: number;
   player: Player;
   stats: Stats;
   currentEpisodeNumber: number;
+  currentSceneId: string;
   relationships: Record<string, Relationship>;
   flags: string[];
   discoveredSecrets: string[];
   parenthood: ChildRoute;
   recaps: RecapEntry[];
+  activeHookIds: string[];
+  resolvedHookIds: string[];
+  gossipFeed: GossipMessage[];
+  storyArcProgress: Record<string, number>;
+  futureLocks: string[];
+  lastChoiceResult?: ChoiceResult;
   endingId?: string;
   createdAt: string;
   updatedAt: string;
@@ -199,11 +344,13 @@ export interface GameState {
 export type Screen =
   | "start"
   | "create"
-  | "overview"
+  | "map"
   | "episode"
   | "directory"
   | "profile"
   | "families"
   | "relationships"
   | "journal"
+  | "gossip"
+  | "settings"
   | "finale";
