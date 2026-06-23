@@ -1,6 +1,5 @@
 import { characters } from "../data/characters";
 import { locations } from "../data/locations";
-import { storyArcs } from "../data/storyArcs";
 import { getCurrentEpisode, getCurrentScene, getEpisodeByNumber } from "../engine/gameEngine";
 import type { GameState, SceneChoice } from "../types";
 import { ChoiceCard } from "./ChoiceCard";
@@ -59,27 +58,22 @@ export function EpisodeScreen({ state, onChoose }: EpisodeScreenProps) {
     .filter(Boolean);
 
   return (
-    <section className="episodeSceneLayout">
-      <aside className="episodeSidebar">
-        <CurrentObjective state={state} />
-        <article className="recapPanel">
-          <p className="eyebrow">Previously on The Close...</p>
+    <section className="episodeReader">
+      <div className="episodeMetaDock">
+        <details>
+          <summary>Previously</summary>
           <p>{state.recaps.length === 0 ? episode.previouslyText : state.recaps[state.recaps.length - 1].recapLine}</p>
           {previousEpisode && <small>Last episode: {previousEpisode.title}</small>}
-        </article>
-        <article className="panel">
-          <h2>Active arcs</h2>
-          <div className="tagRow">
-            {episode.storyArcTags.map((tag) => (
-              <span className="tag muted" title={storyArcs[tag]} key={tag}>
-                {tag.replace(/-/g, " ")}
-              </span>
-            ))}
-          </div>
-        </article>
-        <StoryHooksPanel state={state} compact />
-      </aside>
-
+        </details>
+        <details>
+          <summary>Objective</summary>
+          <CurrentObjective state={state} />
+        </details>
+        <details>
+          <summary>Hooks</summary>
+          <StoryHooksPanel state={state} compact />
+        </details>
+      </div>
       <article className="episodePanel scenePanel">
         <LocationBackdrop location={location} />
         <div className="sceneHeader">

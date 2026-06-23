@@ -1863,6 +1863,213 @@ select {
   max-width: 42rem;
 }
 
+.mapHeroRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+  gap: 0.85rem;
+  align-items: stretch;
+}
+
+.mapFocusGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.36fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.mapMiniPanel {
+  position: sticky;
+  top: 5.25rem;
+}
+
+.mapTeaserRail {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.teaserCard,
+.softDetails,
+.episodeMetaDock details {
+  border: 1px solid rgba(49, 95, 104, 0.16);
+  border-radius: 0.85rem;
+  background: rgba(255, 250, 240, 0.82);
+  box-shadow: 0 10px 24px rgba(31, 43, 46, 0.06);
+}
+
+.teaserCard {
+  padding: 0.75rem;
+}
+
+.teaserCard summary,
+.softDetails summary,
+.episodeMetaDock summary,
+.journalSection summary {
+  cursor: pointer;
+  color: var(--navy);
+  font-weight: 900;
+}
+
+.teaserCard p,
+.softDetails p {
+  margin: 0.5rem 0 0;
+}
+
+.mapFocusGrid .storybookMap {
+  min-height: min(62vw, 49rem);
+}
+
+.mapMiniPanel .locationSheet {
+  max-height: calc(100vh - 7rem);
+  overflow: auto;
+}
+
+.locationOneLine {
+  margin: 0;
+  border-left: 3px solid var(--amber);
+  padding-left: 0.65rem;
+  color: var(--ink);
+  font-weight: 750;
+}
+
+.softDetails {
+  padding: 0.65rem;
+}
+
+.softDetails .locationNotes {
+  margin-top: 0.65rem;
+}
+
+.episodeReader {
+  display: grid;
+  gap: 1rem;
+  width: min(980px, 100%);
+  margin: 0 auto;
+}
+
+.episodeMetaDock {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.episodeMetaDock details {
+  padding: 0.65rem 0.75rem;
+}
+
+.episodeMetaDock p,
+.episodeMetaDock .objectiveCard {
+  margin-top: 0.55rem;
+}
+
+.episodeMetaDock .objectiveCard,
+.episodeMetaDock .panel {
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  background: transparent;
+}
+
+.episodeReader .scenePanel {
+  border-radius: 1.25rem;
+}
+
+.episodeReader .locationBackdrop {
+  min-height: 10rem;
+  margin: -1rem -1rem 0;
+  border-radius: 1.25rem 1.25rem 0 0;
+}
+
+.episodeReader .sceneHeader {
+  padding-top: 1.25rem;
+}
+
+.episodeReader .narrationCard {
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+.episodeReader .dialogueStack {
+  max-width: 48rem;
+  margin: 1.25rem auto;
+}
+
+.episodeReader .choiceGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 54rem;
+  margin: 1.25rem auto 0;
+}
+
+.episodeReader .consequencePanel {
+  max-width: 50rem;
+  margin: 1rem auto;
+}
+
+.narrativeChoice {
+  min-height: 11rem;
+  align-content: start;
+}
+
+.narrativeChoice > span:not(.choiceTopline) {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.narrativeChoice small {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.consequencePanel > p {
+  color: var(--ink);
+  font-size: 1.02rem;
+}
+
+.consequenceChips {
+  margin-top: 0.75rem;
+}
+
+.journalGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.journalSection {
+  padding: 1rem;
+}
+
+.journalSection:not([open]) {
+  min-height: auto;
+}
+
+.journalSection summary {
+  list-style: none;
+  font-size: 1.05rem;
+}
+
+.journalSection summary::-webkit-details-marker {
+  display: none;
+}
+
+.journalSection summary::after {
+  float: right;
+  content: "+";
+  color: var(--clay);
+}
+
+.journalSection[open] summary::after {
+  content: "-";
+}
+
+.journalSection > :not(summary) {
+  margin-top: 0.75rem;
+}
+
 .journalNotebook .panel {
   position: relative;
   border-color: rgba(184, 135, 82, 0.28);
@@ -2062,6 +2269,8 @@ select {
   .episodeLayout,
   .episodeSceneLayout,
   .mapGrid,
+  .mapHeroRow,
+  .mapFocusGrid,
   .gameHud,
   .twoColumns,
   .profileHero {
@@ -2074,7 +2283,8 @@ select {
   }
 
   .recapPanel,
-  .episodeSidebar {
+  .episodeSidebar,
+  .mapMiniPanel {
     position: static;
   }
 
@@ -2085,7 +2295,10 @@ select {
   .locationGrid,
   .hudStats,
   .castFilters,
-  .castGrid {
+  .castGrid,
+  .mapTeaserRail,
+  .episodeMetaDock,
+  .journalGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -2107,7 +2320,11 @@ select {
   .hudStats,
   .castFilters,
   .castGrid,
-  .castCard {
+  .castCard,
+  .mapTeaserRail,
+  .episodeMetaDock,
+  .journalGrid,
+  .episodeReader .choiceGrid {
     grid-template-columns: 1fr;
   }
 

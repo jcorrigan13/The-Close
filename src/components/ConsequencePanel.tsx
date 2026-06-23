@@ -39,17 +39,17 @@ export function ConsequencePanel({ result }: { result: ChoiceResult }) {
             </span>
           ));
         })}
-        {result.gossipUnlocked.map((id) => (
+        {result.gossipUnlocked.slice(0, 1).map((id) => (
           <span className="chip gossip" key={id}>
             Gossip added
           </span>
         ))}
-        {result.hooksUnlocked.map((id) => (
+        {result.hooksUnlocked.slice(0, 2).map((id) => (
           <span className="chip hook" key={id}>
             New hook: {cleanId(id)}
           </span>
         ))}
-        {result.futureLocks.map((lock) => (
+        {result.futureLocks.slice(0, 1).map((lock) => (
           <span className="chip warning" key={lock}>
             Someone will remember that
           </span>

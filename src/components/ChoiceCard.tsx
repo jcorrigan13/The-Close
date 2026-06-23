@@ -8,6 +8,7 @@ interface ChoiceCardProps {
 
 export function ChoiceCard({ choice, onSelect }: ChoiceCardProps) {
   const risk = riskLevel(choice.hintedConsequence, choice.toneBadge);
+  const shortHint = choice.hintedConsequence.split(".")[0];
   return (
     <button className={`choiceCard narrativeChoice risk-${risk.toLowerCase()}`} type="button" onClick={onSelect}>
       <span className="choiceTopline">
@@ -21,7 +22,7 @@ export function ChoiceCard({ choice, onSelect }: ChoiceCardProps) {
       </span>
       <strong>{choice.label}</strong>
       <span>{choice.description}</span>
-      <small>{choice.hintedConsequence}</small>
+      <small>Risk: {shortHint}</small>
     </button>
   );
 }

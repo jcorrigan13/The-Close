@@ -4,11 +4,8 @@ import { getCurrentEpisode, getCurrentScene, getIslandPulse } from "../engine/ga
 import type { GameState } from "../types";
 import { CurrentObjective } from "./CurrentObjective";
 import { GameHUD } from "./GameHUD";
-import { GossipFeed } from "./GossipFeed";
-import { IslandPulse } from "./IslandPulse";
 import { LocationDetailPanel } from "./LocationDetailPanel";
 import { MapLocationMarker } from "./MapLocationMarker";
-import { StoryHooksPanel } from "./StoryHooksPanel";
 
 interface SkerrybraeMapProps {
   state: GameState;
@@ -39,11 +36,13 @@ export function SkerrybraeMap({ state, onStartEpisode, onOpenProfile }: Skerrybr
         </button>
       </div>
 
-      <GameHUD state={state} />
+      <div className="mapHeroRow">
+        <GameHUD state={state} />
+        <CurrentObjective state={state} />
+      </div>
 
-      <div className="mapGrid">
+      <div className="mapFocusGrid">
         <div className="mapColumn">
-          <CurrentObjective state={state} />
           <div className="skerryMap storybookMap" aria-label="Clickable illustrated map of Skerrybrae">
             <MapArtwork />
             {locations.map((location) => (
@@ -58,15 +57,24 @@ export function SkerrybraeMap({ state, onStartEpisode, onOpenProfile }: Skerrybr
           </div>
         </div>
 
-        <aside className="mapSide">
+        <aside className="mapMiniPanel">
           <LocationDetailPanel location={selected} state={state} onStartEpisode={onStartEpisode} onOpenProfile={onOpenProfile} />
-          <IslandPulse items={pulse} />
-          <StoryHooksPanel state={state} compact />
-          <article className="panel">
-            <h2>Group chat latest</h2>
-            <GossipFeed state={state} limit={3} />
-          </article>
         </aside>
+      </div>
+
+      <div className="mapTeaserRail">
+        <details className="teaserCard" open>
+          <summary>Island Pulse</summary>
+          <p>{pulse[0]}</p>
+        </details>
+        <details className="teaserCard">
+          <summary>Story Hooks ({state.activeHookIds.length})</summary>
+          <p>{state.activeHookIds.slice(0, 2).map((hook) => hook.replace(/-/g, " ")).join(", ") || "No open hooks yet."}</p>
+        </details>
+        <details className="teaserCard">
+          <summary>Latest Gossip</summary>
+          <p>{state.gossipFeed[state.gossipFeed.length - 1]?.text ?? "No gossip unlocked yet."}</p>
+        </details>
       </div>
     </section>
   );

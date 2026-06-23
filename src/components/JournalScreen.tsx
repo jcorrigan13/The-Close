@@ -30,13 +30,13 @@ export function JournalScreen({ state }: JournalScreenProps) {
         <p>Ambition: {state.player.ambition}</p>
       </div>
 
-      <div className="sectionGrid twoColumns">
-        <article className="panel">
-          <h2>Previously...</h2>
+      <div className="journalGrid">
+        <details className="panel journalSection" open>
+          <summary>Previously</summary>
           {state.recaps.length > 0 ? <p>{state.recaps[state.recaps.length - 1].recapLine}</p> : <p>The ferry has not docked yet.</p>}
-        </article>
-        <article className="panel">
-          <h2>Drama still brewing</h2>
+        </details>
+        <details className="panel journalSection" open>
+          <summary>Drama still brewing</summary>
           <ul className="plainList">
             {hooks.map((hook) => (
               <li key={hook.id}>{hook.title}</li>
@@ -45,12 +45,10 @@ export function JournalScreen({ state }: JournalScreenProps) {
               <li key={lock}>Future consequence: {lock.replace(/_/g, " ")}</li>
             ))}
           </ul>
-        </article>
-      </div>
+        </details>
 
-      <div className="sectionGrid twoColumns">
-        <article className="panel">
-          <h2>Major choices</h2>
+        <details className="panel journalSection">
+          <summary>Major choices</summary>
           {state.recaps.length === 0 ? (
             <p>No episodes completed yet.</p>
           ) : (
@@ -66,9 +64,9 @@ export function JournalScreen({ state }: JournalScreenProps) {
               ))}
             </ol>
           )}
-        </article>
-        <article className="panel">
-          <h2>Story hooks</h2>
+        </details>
+        <details className="panel journalSection">
+          <summary>Story hooks</summary>
           {hooks.length === 0 ? (
             <p>No open hooks yet.</p>
           ) : (
@@ -80,12 +78,10 @@ export function JournalScreen({ state }: JournalScreenProps) {
               ))}
             </ul>
           )}
-        </article>
-      </div>
+        </details>
 
-      <div className="sectionGrid twoColumns">
-        <article className="panel">
-          <h2>Secrets discovered</h2>
+        <details className="panel journalSection">
+          <summary>Secrets discovered</summary>
           {knownSecrets.length === 0 ? (
             <p>No private secrets discovered yet.</p>
           ) : (
@@ -102,16 +98,14 @@ export function JournalScreen({ state }: JournalScreenProps) {
               )}
             </ul>
           )}
-        </article>
-        <article className="panel">
-          <h2>Gossip feed history</h2>
+        </details>
+        <details className="panel journalSection">
+          <summary>Gossip feed</summary>
           <GossipFeed state={state} limit={5} />
-        </article>
-      </div>
+        </details>
 
-      <div className="sectionGrid twoColumns">
-        <article className="panel">
-          <h2>Relationship changes</h2>
+        <details className="panel journalSection">
+          <summary>Relationship shifts</summary>
           {relationshipChanges.length === 0 ? (
             <p>No major relationship changes yet.</p>
           ) : (
@@ -127,9 +121,9 @@ export function JournalScreen({ state }: JournalScreenProps) {
               })}
             </ul>
           )}
-        </article>
-        <article className="panel">
-          <h2>People with opinions</h2>
+        </details>
+        <details className="panel journalSection">
+          <summary>People with opinions</summary>
           <ul className="plainList">
             {opinionated.map((relationship) => {
               const character = characters.find((item) => item.id === relationship.characterId);
@@ -140,12 +134,10 @@ export function JournalScreen({ state }: JournalScreenProps) {
               );
             })}
           </ul>
-        </article>
-      </div>
+        </details>
 
-      <div className="sectionGrid twoColumns">
-        <article className="panel">
-          <h2>Romance and family status</h2>
+        <details className="panel journalSection">
+          <summary>Romance and family</summary>
           <p>Romance score: {state.stats.romance}</p>
           <p>Family score: {state.stats.family}</p>
           <p>Parenthood route: {state.parenthood.route}</p>
@@ -158,9 +150,9 @@ export function JournalScreen({ state }: JournalScreenProps) {
                 </span>
               ))}
           </div>
-        </article>
-        <article className="panel">
-          <h2>Teen drama</h2>
+        </details>
+        <details className="panel journalSection">
+          <summary>Teen drama</summary>
           {teenFlags.length === 0 ? <p>No teen drama flags yet.</p> : null}
           <div className="tagRow">
             {teenFlags.map((flag) => (
@@ -169,11 +161,10 @@ export function JournalScreen({ state }: JournalScreenProps) {
               </span>
             ))}
           </div>
-        </article>
-      </div>
+        </details>
 
-      <article className="panel">
-        <h2>Co-parenting / parenthood route</h2>
+      <details className="panel journalSection">
+        <summary>Co-parenting / parenthood</summary>
         <p>Current route: {state.parenthood.route}</p>
         {state.parenthood.children.map((child) => (
           <div className="miniCard" key={child.name}>
@@ -185,15 +176,16 @@ export function JournalScreen({ state }: JournalScreenProps) {
             </div>
           </div>
         ))}
-      </article>
+      </details>
 
-      <article className="panel">
-        <h2>Ambition progress</h2>
+      <details className="panel journalSection">
+        <summary>Ambition progress</summary>
         <p>
           {state.player.ambition} is being shaped by your reputation ({state.stats.reputation}), island trust ({state.stats.islandTrust}),
           romance ({state.stats.romance}), and family ({state.stats.family}).
         </p>
-      </article>
+      </details>
+      </div>
     </section>
   );
 }

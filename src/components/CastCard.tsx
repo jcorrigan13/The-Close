@@ -25,7 +25,7 @@ export function CastCard({ character, state, onOpenProfile }: CastCardProps) {
           </h2>
           <span>{character.age}</span>
         </div>
-        <p>{character.quote ?? character.publicDescription}</p>
+        <p>{character.quote ?? character.publicDescription.split(".")[0]}</p>
         <div className="statusBadgeRow">
           <span className="statusBadge">{family?.name}</span>
           <span className="statusBadge">{relationship?.label ?? character.playerRelationship ?? "neighbour"}</span>

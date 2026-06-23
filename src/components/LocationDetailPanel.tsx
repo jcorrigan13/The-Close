@@ -33,28 +33,13 @@ export function LocationDetailPanel({ location, state, onStartEpisode, onOpenPro
         </div>
         <p className="locationAtmosphere">{location.description}</p>
         <div className="statusBadgeRow">
-          {status.badges.slice(0, 5).map((badge) => (
+          {status.badges.slice(0, 3).map((badge) => (
             <span className="statusBadge" key={badge}>
               {badge}
             </span>
           ))}
         </div>
-        <div className="locationNotes">
-          <p>
-            <strong>Active drama</strong>
-            {status.tooltip}
-          </p>
-          <p>
-            <strong>Gossip</strong>
-            {location.gossip}
-          </p>
-          {family && (
-            <p>
-              <strong>Family anchor</strong>
-              {family.name} - {family.business}
-            </p>
-          )}
-        </div>
+        <p className="locationOneLine">{status.tooltip}</p>
         {people.length > 0 && (
           <div className="locationCastStrip">
             {people.map((person) => (
@@ -78,6 +63,25 @@ export function LocationDetailPanel({ location, state, onStartEpisode, onOpenPro
             Read gossip
           </button>
         </div>
+        <details className="softDetails">
+          <summary>More details</summary>
+          <div className="locationNotes">
+            <p>
+              <strong>Gossip</strong>
+              {location.gossip}
+            </p>
+            {family && (
+              <p>
+                <strong>Family anchor</strong>
+                {family.name} - {family.business}
+              </p>
+            )}
+            <p>
+              <strong>Social status</strong>
+              {location.socialStatus}
+            </p>
+          </div>
+        </details>
       </div>
     </article>
   );
